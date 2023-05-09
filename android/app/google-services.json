@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "889835436322",
+    "project_id": "wayoutchattingapp",
+    "storage_bucket": "wayoutchattingapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889835436322:android:6021e469e579b397e78d7b",
+        "android_client_info": {
+          "package_name": "com.example.wayoutchatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889835436322-f441sj7l8n6ojfv6u277j5dmv6g95jds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqZtl3vmVPcOJgthtp6NZE9d4Em01CwrU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889835436322-f441sj7l8n6ojfv6u277j5dmv6g95jds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

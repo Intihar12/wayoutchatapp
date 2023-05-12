@@ -32,12 +32,21 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
   }
 
   googleLoginButtonLick() {
-    signInWithGoogle().then((user) => {
+    Dialogs.showProgressBar(context);
+    signInWithGoogle().then((user) async => {
+          Navigator.pop(context),
           if (user != null)
             {
-              print('/user : ${user.user}'),
-              print('/ user info : ${user.additionalUserInfo}'),
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()))
+              if ((await Apis.isUserExist()))
+                {
+                  print('/user : ${user.user}'),
+                  print('/ user info : ${user.additionalUserInfo}'),
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()))
+                }
+              else
+                {
+                  await Apis.createUser().then((value) => {Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()))})
+                }
             }
         });
   }

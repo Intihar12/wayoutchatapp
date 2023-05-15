@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../modals/chat_user_modal.dart';
+import '../screens/chat_screen.dart';
 
 class CartChatUser extends StatefulWidget {
   CartChatUser({Key? key, required this.user}) : super(key: key);
@@ -23,7 +24,14 @@ class _CartChatUserState extends State<CartChatUser> {
       margin: EdgeInsets.symmetric(horizontal: mq.width * .04, vertical: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                        user: widget.user,
+                      )));
+        },
         child: ListTile(
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(mq.height * .3),

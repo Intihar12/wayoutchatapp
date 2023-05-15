@@ -9,6 +9,7 @@ import 'package:wayoutchatapp/modals/chat_user_modal.dart';
 import 'package:wayoutchatapp/screens/auth/login_screen.dart';
 
 import '../api/apis.dart';
+import '../api/apis.dart';
 import '../diologs/diologs_screen.dart';
 import '../main.dart';
 
@@ -188,6 +189,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             setState(() {
                               _image = image.path;
                             });
+                            Apis.updateProfileImage(File(_image!));
+
                             Navigator.pop(context);
                           }
                         },
@@ -204,6 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             setState(() {
                               _image = image.path;
                             });
+                            Apis.updateProfileImage(File(_image!));
                             Navigator.pop(context);
                           }
                         },

@@ -3,8 +3,8 @@ class ChatUserModal {
   String? about;
   String? image;
   String? id;
-  String? lastActive;
-  String? createAt;
+  DateTime? lastActive;
+  DateTime? createAt;
   String? email;
   String? pushToken;
   bool? isOnline;
@@ -15,11 +15,11 @@ class ChatUserModal {
       name: json?["name"],
       about: json?["about"],
       isOnline: json?["isOnline"],
-      createAt: json?["createAt"],
+      createAt: json?["createAt"] != null ? json!["createAt"].toDate() : json?["createAt"],
       image: json?["image"] == null ? null : json?["image"],
       email: json?["email"],
       id: json?["id"],
-      lastActive: json?["lastActive"],
+      lastActive: json?["lastActive"] != null ? json!["lastActive"].toDate() : json?["lastActive"],
       pushToken: json?["pushToken"]);
 
   Map<String, dynamic> toJson() => {

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:wayoutchatapp/screens/profile_screen.dart';
 
@@ -7,6 +8,7 @@ import '../api/apis.dart';
 import '../main.dart';
 import '../modals/chat_user_modal.dart';
 import '../widgets/cart_chat_user.dart';
+import 'notification_services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,11 +21,20 @@ class _HomeScreenState extends State<HomeScreen> {
   List<ChatUserModal> list = [];
   final List<ChatUserModal> searchList = [];
   bool isSearch = false;
+
   @override
   void initState() {
     // TODO: implement initState
-    Apis.isSelfInfo();
+    Apis.isSelfInfo(context);
     super.initState();
+
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      if (Apis.auth.currentUser != null) {
+        if (message.toString().contains('resume')) Apis.updateActiveUserStatus(true);
+        if (message.toString().contains('pause')) Apis.updateActiveUserStatus(false);
+      }
+      return Future.value(message);
+    });
   }
 
   @override
@@ -66,7 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         searchList.clear();
 
                         for (var i in list) {
-                          if (i.name!.toLowerCase().contains(value.toLowerCase()) || i.email!.toLowerCase().contains(value.toLowerCase())) {
+                          if (i.name!.toLowerCase().contains(value.toLowerCase()) ||
+                              i.email!.toLowerCase().contains(value.toLowerCase())) {
                             searchList.add(i);
                           }
                           setState(() {

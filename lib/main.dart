@@ -1,11 +1,24 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:wayoutchatapp/screens/notification_services.dart';
 
 import 'package:wayoutchatapp/screens/splash_screen.dart';
 
 late Size mq;
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(
+  RemoteMessage message,
+) async {
+  NotificationServices.handleMessage(message);
+  print('onBackgroundMessage received: $message');
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   await Firebase.initializeApp();
   runApp(const MyApp());
 }

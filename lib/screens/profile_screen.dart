@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -19,6 +20,7 @@ class ProfileScreen extends StatefulWidget {
           key: key,
         );
   ChatUserModal user;
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -26,6 +28,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final formKey = GlobalKey<FormState>();
   String? _image;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -35,11 +38,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.only(bottom: 10.0),
           child: FloatingActionButton.extended(
             onPressed: () async {
+              await Apis.updateActiveUserStatus(false);
               await Apis.auth.signOut().then((value) async => {
                     await GoogleSignIn().signOut().then((value) => {
                           Navigator.pop(context),
                           Navigator.pop(context),
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginHomeScreen()))
+                          Apis.auth = FirebaseAuth.instance,
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => LoginHomeScreen()))
                         })
                   });
             },
@@ -147,10 +152,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
                         formKey.currentState!.save();
-                        Apis.updateUserProfile().then((value) => {Dialogs.showSnackBar(context, "Update successfully")});
+                        Apis.updateUserProfile()
+                            .then((value) => {Dialogs.showSnackBar(context, "Update successfully")});
                       }
                     },
-                    style: ElevatedButton.styleFrom(shape: StadiumBorder(), minimumSize: Size(mq.width * 0.6, mq.height * .05)),
+                    style: ElevatedButton.styleFrom(
+                        shape: StadiumBorder(), minimumSize: Size(mq.width * 0.6, mq.height * .05)),
                     icon: Icon(Icons.edit),
                     label: Text("Update"),
                   )
@@ -166,7 +173,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void showBottomSheet() {
     showModalBottomSheet(
         context: context,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         builder: (_) {
           return ListView(
             shrinkWrap: true,

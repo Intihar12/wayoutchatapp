@@ -3,9 +3,7 @@ import 'package:intl/intl.dart';
 
 class MyDateUtils {
   static String getFormatTime(BuildContext context, DateTime? time) {
-    // final date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
-    String formattedTime = DateFormat('kk:mm:a').format(time!);
-    //return TimeOfDay.fromDateTime(date).format(context);
+    String formattedTime = DateFormat('h:mm a').format(time!).replaceAll('AM', 'am').replaceAll('PM', 'pm');
     return formattedTime;
   }
 

@@ -41,11 +41,12 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
                 {
                   print('/user : ${user.user}'),
                   print('/ user info : ${user.additionalUserInfo}'),
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()))
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()))
                 }
               else
                 {
-                  await Apis.createUser().then((value) => {Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()))})
+                  await Apis.createUser().then(
+                      (value) => {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()))})
                 }
             }
         });
@@ -97,7 +98,8 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
               width: mq.width * .9,
               height: mq.height * .07,
               child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 219, 255, 178), shape: StadiumBorder()),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 219, 255, 178), shape: StadiumBorder()),
                 onPressed: () {
                   googleLoginButtonLick();
                   //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));

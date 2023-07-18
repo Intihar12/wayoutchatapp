@@ -37,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         floatingActionButton: Padding(
           padding: const EdgeInsets.only(bottom: 10.0),
           child: FloatingActionButton.extended(
+            backgroundColor: Colors.teal,
             onPressed: () async {
               await Apis.updateActiveUserStatus(false);
               await Apis.auth.signOut().then((value) async => {
@@ -53,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          // automaticallyImplyLeading: false,
           title: Text("Profile Screen"),
         ),
         body: Form(
@@ -102,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.white,
                             child: Icon(
                               Icons.edit,
-                              color: Colors.blue,
+                              color: Colors.teal,
                             ),
                           ),
                         )
@@ -123,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: InputDecoration(
                         prefix: Icon(
                           Icons.person,
-                          color: Colors.blue,
+                          color: Colors.teal,
                         ),
                         border: OutlineInputBorder(),
                         hintText: "eg, Happy Singh",
@@ -139,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: InputDecoration(
                         prefix: Icon(
                           Icons.person,
-                          color: Colors.blue,
+                          color: Colors.teal,
                         ),
                         border: OutlineInputBorder(),
                         hintText: "eg, Happy Singh",
@@ -157,7 +158,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(), minimumSize: Size(mq.width * 0.6, mq.height * .05)),
+                        backgroundColor: Colors.teal,
+                        shape: StadiumBorder(),
+                        minimumSize: Size(mq.width * 0.6, mq.height * .05)),
                     icon: Icon(Icons.edit),
                     label: Text("Update"),
                   )
@@ -180,7 +183,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             shrinkWrap: true,
             padding: EdgeInsets.only(top: mq.height * .03, bottom: mq.height * .05, left: mq.width * .05),
             children: [
-              Text("Pick profile pictuer"),
+              Text(
+                "Update profile pictuer",
+                style: TextStyle(fontSize: 20),
+              ),
               SizedBox(
                 height: mq.height * .07,
               ),
@@ -188,8 +194,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                        onPressed: () async {
+                    InkWell(
+                        onTap: () async {
                           final ImagePicker picker = ImagePicker();
 // Pick an image.
                           final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -202,12 +208,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Navigator.pop(context);
                           }
                         },
-                        child: Icon(Icons.browse_gallery)),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.panorama,
+                              color: Colors.teal,
+                            ),
+                            Text("Gallery")
+                          ],
+                        )),
                     SizedBox(
-                      width: mq.width * .07,
+                      width: mq.width * .3,
                     ),
-                    ElevatedButton(
-                        onPressed: () async {
+                    InkWell(
+                        onTap: () async {
                           final ImagePicker picker = ImagePicker();
 // Pick an image.
                           final XFile? image = await picker.pickImage(source: ImageSource.camera);
@@ -219,7 +233,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Navigator.pop(context);
                           }
                         },
-                        child: Icon(Icons.camera_alt))
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.camera_alt,
+                              color: Colors.teal,
+                            ),
+                            Text("Camera")
+                          ],
+                        ))
                   ],
                 ),
               )

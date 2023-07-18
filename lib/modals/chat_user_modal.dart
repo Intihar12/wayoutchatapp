@@ -1,3 +1,19 @@
+class UserModal {
+  List<ChatUserModal>? chatUserList;
+
+  UserModal({this.chatUserList});
+
+  factory UserModal.fromJson(Map<String, dynamic>? json) => UserModal(
+        chatUserList: json?["chatUserList"] == null
+            ? []
+            : List<ChatUserModal>.from(json?["chatUserList"]!.map((x) => ChatUserModal.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "chatUserList": chatUserList == null ? [] : List<dynamic>.from(chatUserList!.map((x) => x.toJson())),
+      };
+}
+
 class ChatUserModal {
   String? name;
   String? about;
@@ -8,13 +24,25 @@ class ChatUserModal {
   String? email;
   String? pushToken;
   bool? isOnline;
+  bool? isGroup;
 
-  ChatUserModal({this.name, this.isOnline, this.about, this.createAt, this.id, this.image, this.email, this.lastActive, this.pushToken});
+  ChatUserModal(
+      {this.name,
+      this.isOnline,
+      this.about,
+      this.createAt,
+      this.id,
+      this.image,
+      this.email,
+      this.lastActive,
+      this.pushToken,
+      this.isGroup});
 
   factory ChatUserModal.fromJson(Map<String, dynamic>? json) => ChatUserModal(
       name: json?["name"],
       about: json?["about"],
       isOnline: json?["isOnline"],
+      isGroup: json?["isGroup"],
       createAt: json?["createAt"] != null ? json!["createAt"].toDate() : json?["createAt"],
       image: json?["image"] == null ? null : json?["image"],
       email: json?["email"],
@@ -26,6 +54,7 @@ class ChatUserModal {
         "name": name,
         "about": about,
         "isOnline": isOnline,
+        "isGroup": isGroup,
         "createAt": createAt,
         "image": image,
         "email": email,

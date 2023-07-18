@@ -632,19 +632,24 @@ import '../main.dart';
 import '../modals/chat_user_modal.dart';
 import '../screens/date_formated.dart';
 
-class MessageCard extends StatefulWidget {
-  MessageCard({Key? key, required this.message, required this.image, required this.user, required this.isOnline})
-      : super(key: key);
+class GroupMessageCard extends StatefulWidget {
+  GroupMessageCard({
+    Key? key,
+    required this.message,
+    required this.image,
+    required this.user,
+  }) : super(key: key);
   final MessagesModal message;
   String? image;
-  bool? isOnline;
+
+  // bool? isOnline;
   ChatUserModal user;
 
   @override
-  State<MessageCard> createState() => _MessageCardState();
+  State<GroupMessageCard> createState() => _GroupMessageCardState();
 }
 
-class _MessageCardState extends State<MessageCard> {
+class _GroupMessageCardState extends State<GroupMessageCard> {
   //AudioPlayer audioPlayer = AudioPlayer();
 
   // todo for play
@@ -692,8 +697,8 @@ class _MessageCardState extends State<MessageCard> {
     return InkWell(
         onLongPress: () {
           showBottomSheet(isMe);
-          print("widget.isOnline");
-          print(widget.isOnline);
+          // print("widget.isOnline");
+          //print(widget.isOnline);
         },
         child: isMe ? _greenMessage() : _blueMessage());
     // return Apis.user.uid == widget.message.fromId ? _greenMessage() : _blueMessage();
@@ -701,7 +706,7 @@ class _MessageCardState extends State<MessageCard> {
 
   Widget _blueMessage() {
     if (widget.message.read == null) {
-      widget.isOnline == true ? Apis.updateMessageReadStatus(widget.message) : SizedBox();
+      // widget.isOnline == true ? Apis.updateMessageReadStatus(widget.message) : SizedBox();
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -722,7 +727,7 @@ class _MessageCardState extends State<MessageCard> {
                 _buildBlueMessage(widget.message.type),
                 Positioned(
                     right: widget.message.type == Type.audio ? 70 : 5,
-                    //  bottom: -10,
+                    //bottom: -10,
                     bottom: widget.message.type == Type.image ? 1 : -12,
                     child: Container(
                       child: Row(
@@ -738,7 +743,7 @@ class _MessageCardState extends State<MessageCard> {
                     )),
                 widget.message.type == Type.audio
                     ? Positioned(
-                        top: 30,
+                        top: 39,
                         right: 40,
                         child: Container(
                           child: Icon(
@@ -761,10 +766,10 @@ class _MessageCardState extends State<MessageCard> {
   Widget _buildBlueMessage(Type? type) {
     print("widget.message.fromId");
     print(widget.message.fromId);
-    bool isMe = Apis.user.uid == widget.message.fromId;
+    // bool isMeUser = Apis.user.uid == widget.message.fromId;
     // print("ismjkjk");
     // print(isMeUser);
-    // bool isMeGroup = widget.user.id == widget.message.fromId;
+    bool isMe = widget.user.id == widget.message.fromId;
     // print(isMeGroup);
     // bool isMe = Apis.isgroup == true ? isMeGroup : isMeUser;
     // print(isMe);
@@ -773,58 +778,148 @@ class _MessageCardState extends State<MessageCard> {
     print(type);
     switch (type) {
       case Type.image:
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(mq.height * .02),
-          child: CachedNetworkImage(
-            imageUrl: widget.message.msg!,
-            // height: mq.height * .3,
-            // width: mq.width * .7,
-            placeholder: (context, url) => CircularProgressIndicator(),
-            fit: BoxFit.fill,
-            errorWidget: (context, url, error) => Icon(
-              Icons.error,
-              size: 70,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StreamBuilder(
+                stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                builder: (context, snapshot) {
+                  print("testing k");
+                  final data = snapshot.data?.docs;
+
+                  //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                  final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                  //Apis.isgroup = list[0].isGroup;
+                  print("group info in message card");
+                  print(Apis.isgroup);
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Row(
+                      children: [
+                        Text("~"),
+                        Text(
+                          list.isNotEmpty ? list[0].name.toString() : "~",
+                          style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(mq.height * .02),
+              child: CachedNetworkImage(
+                imageUrl: widget.message.msg!,
+                // height: mq.height * .3,
+                // width: mq.width * .7,
+                placeholder: (context, url) => CircularProgressIndicator(),
+                fit: BoxFit.fill,
+                errorWidget: (context, url, error) => Icon(
+                  Icons.error,
+                  size: 70,
+                ),
+              ),
             ),
-          ),
+          ],
         );
       case Type.audio:
         return FutureBuilder<Duration?>(
           future: futureDuration,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: mq.width * .02,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StreamBuilder(
+                      stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                      builder: (context, snapshot) {
+                        print("testing k");
+                        final data = snapshot.data?.docs;
+
+                        //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                        final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                        //Apis.isgroup = list[0].isGroup;
+                        print("group info in message card");
+                        print(Apis.isgroup);
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Row(
+                            children: [
+                              Text("~"),
+                              Text(
+                                list.isNotEmpty ? list[0].name.toString() : "~",
+                                style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: mq.width * .02,
+                      ),
+                      isMe
+                          ? StreamBuilder(
+                              stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                              builder: (context, snapshot) {
+                                print("testing k");
+                                final data = snapshot.data?.docs;
+
+                                //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                                final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                                //Apis.isgroup = list[0].isGroup;
+                                print("group info in message card");
+                                print(Apis.isgroup);
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(mq.height * .3),
+                                  child: CachedNetworkImage(
+                                    width: mq.width * .13,
+                                    //  height: mq.height * .05,
+                                    fit: BoxFit.fill,
+                                    imageUrl: list.isNotEmpty ? list[0].image.toString() : "",
+                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => Container(
+                                        width: mq.width * .13,
+                                        height: mq.width * .13,
+                                        color: Colors.grey,
+                                        child: Icon(Icons.map)),
+                                  ),
+                                );
+                              })
+                          : SizedBox(),
+                      _controlButtons(),
+                      _slider(snapshot.data),
+                      isMe
+                          ? SizedBox()
+                          : StreamBuilder(
+                              stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                              builder: (context, snapshot) {
+                                print("testing k");
+                                final data = snapshot.data?.docs;
+
+                                //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                                final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                                //Apis.isgroup = list[0].isGroup;
+                                print("group info in message card");
+                                print(Apis.isgroup);
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(mq.height * .3),
+                                  child: CachedNetworkImage(
+                                    width: mq.width * .13,
+                                    //  height: mq.height * .05,
+                                    fit: BoxFit.fill,
+                                    imageUrl: list.isNotEmpty ? list[0].image.toString() : "",
+                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => Container(
+                                        width: mq.width * .13,
+                                        height: mq.width * .13,
+                                        color: Colors.grey,
+                                        child: Icon(Icons.map)),
+                                  ),
+                                );
+                              })
+                    ],
                   ),
-                  isMe
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(mq.height * .3),
-                          child: CachedNetworkImage(
-                            width: mq.width * .15,
-                            // height: mq.height * .05,
-                            fit: BoxFit.fill,
-                            imageUrl: widget.user.image!,
-                            placeholder: (context, url) => CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => Icon(Icons.error),
-                          ),
-                        )
-                      : SizedBox(),
-                  _controlButtons(),
-                  _slider(snapshot.data),
-                  isMe
-                      ? SizedBox()
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(mq.height * .3),
-                          child: CachedNetworkImage(
-                            width: mq.width * .15,
-                            //   height: mq.height * .05,
-                            fit: BoxFit.fill,
-                            imageUrl: widget.image.toString(),
-                            placeholder: (context, url) => CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => Icon(Icons.error),
-                          ),
-                        ),
                 ],
               );
             }
@@ -856,9 +951,46 @@ class _MessageCardState extends State<MessageCard> {
 
       case Type.text:
         return Container(
-          child: Text(
-            "${widget.message.msg.toString()}" + "               ",
-            style: TextStyle(fontSize: 15, color: Colors.black87),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StreamBuilder(
+                  stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                  builder: (context, snapshot) {
+                    print("testing k");
+                    final data = snapshot.data?.docs;
+
+                    //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                    final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                    //Apis.isgroup = list[0].isGroup;
+                    print("group info in message card");
+                    print(Apis.isgroup);
+                    return Container(
+                      width: 120,
+                      //     color: Colors.yellow,
+                      child: Row(
+                        children: [
+                          Text("~"),
+                          Container(
+                            width: 100,
+                            child: Text(
+                              list.isNotEmpty ? list[0].name.toString() : "~",
+                              style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w500),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+              SizedBox(
+                height: 3,
+              ),
+              Text(
+                "${widget.message.msg.toString()}" + "               ",
+                style: TextStyle(fontSize: 15, color: Colors.black87),
+              ),
+            ],
           ),
         );
 
@@ -866,6 +998,122 @@ class _MessageCardState extends State<MessageCard> {
         return SizedBox();
         break;
     }
+  }
+
+  Widget groupUserInfo() {
+    print("this is group info");
+    //print(message.fromId);
+    return StreamBuilder(
+        stream: Apis.getUserInfo(widget.user),
+        builder: (context, snapshot) {
+          print("testing k");
+          final data = snapshot.data?.docs;
+
+          //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+          final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+          //Apis.isgroup = list[0].isGroup;
+          print("group info in message card");
+          print(Apis.isgroup);
+          return InkWell(
+            onTap: () {
+              // Navigator.push(context, MaterialPageRoute(builder: (_) => ViewProfileScreen(user: widget.user)));
+            },
+            child: Row(
+              children: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+
+                      print("listtttt");
+                      print(list[0].isOnline!);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.black54,
+                    )),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(mq.height * .3),
+                  child: CachedNetworkImage(
+                    width: mq.width * .13,
+                    //  height: mq.height * .05,
+                    fit: BoxFit.fill,
+                    imageUrl: list.isNotEmpty ? list[0].image.toString() : widget.user.image!,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Container(
+                        width: mq.width * .13, height: mq.width * .13, color: Colors.grey, child: Icon(Icons.error)),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      list.isNotEmpty ? list[0].name.toString() : widget.user.name.toString(),
+                      style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w500),
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    // Apis.isgroup == true
+                    //     ? SizedBox()
+                    //     : Text(
+                    //   list.isNotEmpty
+                    //       ? list[0].isOnline
+                    //       ? "Online"
+                    //       : MyDateUtils.getLastActiveTimeDate(
+                    //       context: context, lastActive: list[0].lastActive)
+                    //       : MyDateUtils.getLastActiveTimeDate(
+                    //       context: context, lastActive: widget.user.lastActive),
+                    //   style: TextStyle(fontSize: 13, color: Colors.black54, fontWeight: FontWeight.w500),
+                    // ),
+                    // Text(
+                    //   checkUserOnlineOrOffline(),
+                    //   style: TextStyle(fontSize: 13, color: Colors.black54, fontWeight: FontWeight.w500),
+                    // )
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
+    // return StreamBuilder(
+    //     stream: Apis.getUserGroupInfo(message),
+    //     builder: (context, snapshot) {
+    //       print("intuu snapshot: ${snapshot}");
+    //       switch (snapshot.connectionState) {
+    //         case ConnectionState.waiting:
+    //         case ConnectionState.none:
+    //           return Center(
+    //             child: CircularProgressIndicator(),
+    //           );
+    //         case ConnectionState.active:
+    //         case ConnectionState.done:
+    //           final data = snapshot.data?.docs;
+    //           print(data);
+    //           // final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+    //           print("user data length");
+    //           return Column();
+    //         //print(list.length);
+    //         // if (list.isNotEmpty) {
+    //         //   return ListView.builder(
+    //         //       itemCount: list.length,
+    //         //       padding: EdgeInsets.only(top: mq.height * .01),
+    //         //       physics: BouncingScrollPhysics(),
+    //         //       itemBuilder: (context, index) {
+    //         //         print("user data");
+    //         //         print(list[index].name.toString());
+    //         //         return Column(
+    //         //           children: [Text(list[index].name.toString())],
+    //         //         );
+    //         //       });
+    //         // } else {
+    //         //   return Center(child: Text("No connection is found"));
+    //         // }
+    //       }
+    //     });
   }
 
   // todo
@@ -955,27 +1203,26 @@ class _MessageCardState extends State<MessageCard> {
                               color: Colors.blue,
                               size: mq.width * .04,
                             ),
-                          widget.isOnline == true && widget.message.read == null
-                              ? Icon(
-                                  Icons.done_all_rounded,
-                                  color: Colors.black54,
-                                  size: mq.width * .04,
-                                )
-                              : SizedBox(),
-                          widget.isOnline != true && widget.message.read == null
-                              ? Icon(
-                                  Icons.done,
-                                  color: Colors.black54,
-                                  size: mq.width * .04,
-                                )
-                              : SizedBox(),
+                          // widget.isOnline == true && widget.message.read == null
+                          //     ? Icon(
+                          //         Icons.done_all_rounded,
+                          //         color: Colors.black54,
+                          //         size: mq.width * .04,
+                          //       )
+                          //     : SizedBox(),
+                          if (widget.message.read == null)
+                            Icon(
+                              Icons.done,
+                              color: Colors.black54,
+                              size: mq.width * .04,
+                            )
                         ],
                       ),
                     )),
                 widget.message.type == Type.audio
                     ? Positioned(
-                        top: 30,
-                        left: 40,
+                        top: 39,
+                        left: 35,
                         child: Container(
                           child: Icon(
                             Icons.mic,

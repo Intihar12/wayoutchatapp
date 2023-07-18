@@ -39,6 +39,12 @@ class _CartChatUserState extends State<CartChatUser> {
                   builder: (_) => ChatScreen(
                         user: widget.user,
                       )));
+
+          // Apis.createUserff(widget.user);
+          setState(() {});
+          //Apis.createchatUser(widget.user);
+
+          //  Apis.updateMessageReadStatus(widget.message);
         },
         child: StreamBuilder(
             stream: Apis.getLastMessages(widget.user),
@@ -61,21 +67,29 @@ class _CartChatUserState extends State<CartChatUser> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(mq.height * .3),
                     child: CachedNetworkImage(
-                      width: mq.width * .055,
-                      height: mq.height * .055,
+                      width: mq.width * .15,
+                      height: mq.width * .15,
                       fit: BoxFit.fill,
                       imageUrl: widget.user.image!,
                       placeholder: (context, url) => CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      errorWidget: (context, url, error) => Container(
+                          width: mq.width * .15,
+                          height: mq.width * .15,
+                          color: Colors.grey,
+                          child: Icon(Icons.camera_alt)),
                     ),
                   ),
                 ),
                 title: Text(widget.user.name.toString()),
-                subtitle: Text(messagesModal != null
-                    ? messagesModal!.type == Type.image
-                        ? "Image"
-                        : messagesModal!.msg.toString()
-                    : widget.user.about.toString()),
+                subtitle:
+                    messagesModal != null ? checkMessageType(messagesModal!.type) : Text(widget.user.about.toString()),
+                // Text(messagesModal != null
+                //     ? checkMessageType(messagesModal!.msg.toString())
+                // // messagesModal!.type == Type.image || messagesModal!.type == Type.audio
+                // //         ? "Image"
+                // //         : messagesModal!.msg.toString()
+                //     : widget.user.about.toString()),
+
                 trailing: messagesModal == null
                     ? null
                     : messagesModal!.read == null && Apis.user.uid != messagesModal!.fromId
@@ -93,5 +107,25 @@ class _CartChatUserState extends State<CartChatUser> {
             }),
       ),
     );
+  }
+
+  Widget checkMessageType(Type? type) {
+    switch (type) {
+      case Type.image:
+        return Text("image");
+      case Type.audio:
+        return Text("audio");
+
+      case Type.text:
+        return Container(
+            width: 20,
+            //color: Colors.yellow,
+            child: Text(
+              messagesModal!.msg.toString(),
+              overflow: TextOverflow.ellipsis,
+            ));
+      default:
+        return SizedBox();
+    }
   }
 }

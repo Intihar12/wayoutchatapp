@@ -1,65 +1,33 @@
-class UserModal {
-  List<ChatUserModal>? chatUserList;
-
-  UserModal({this.chatUserList});
-
-  factory UserModal.fromJson(Map<String, dynamic>? json) => UserModal(
-        chatUserList: json?["chatUserList"] == null
-            ? []
-            : List<ChatUserModal>.from(json?["chatUserList"]!.map((x) => ChatUserModal.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "chatUserList": chatUserList == null ? [] : List<dynamic>.from(chatUserList!.map((x) => x.toJson())),
-      };
-}
-
 class ChatUserModal {
-  String? name;
-  String? about;
+  // String? firstId;
+  DateTime? latestActive;
+  bool? isPrivate;
+  List? users;
+  List? adminIds;
   String? image;
-  String? id;
-  DateTime? lastActive;
-  DateTime? createAt;
-  String? email;
-  String? pushToken;
-  bool? isOnline;
-  bool? isGroup;
+  String? groupId;
+  String? groupName;
 
   ChatUserModal(
-      {this.name,
-      this.isOnline,
-      this.about,
-      this.createAt,
-      this.id,
-      this.image,
-      this.email,
-      this.lastActive,
-      this.pushToken,
-      this.isGroup});
+      {this.isPrivate, this.latestActive, this.users, this.adminIds, this.groupId, this.image, this.groupName});
 
   factory ChatUserModal.fromJson(Map<String, dynamic>? json) => ChatUserModal(
-      name: json?["name"],
-      about: json?["about"],
-      isOnline: json?["isOnline"],
-      isGroup: json?["isGroup"],
-      createAt: json?["createAt"] != null ? json!["createAt"].toDate() : json?["createAt"],
-      image: json?["image"] == null ? null : json?["image"],
-      email: json?["email"],
-      id: json?["id"],
-      lastActive: json?["lastActive"] != null ? json!["lastActive"].toDate() : json?["lastActive"],
-      pushToken: json?["pushToken"]);
+      // firstId: json?["firstId"],
+      latestActive: json?["latestActive"] != null ? json!["latestActive"].toDate() : json?["latestActive"],
+      isPrivate: json?["isPrivate"],
+      users: json?["users"],
+      adminIds: json?["adminIds"],
+      groupId: json?["groupId"],
+      groupName: json?["groupName"],
+      image: json?["image"]);
 
   Map<String, dynamic> toJson() => {
-        "name": name,
-        "about": about,
-        "isOnline": isOnline,
-        "isGroup": isGroup,
-        "createAt": createAt,
+        "latestActive": latestActive,
+        "isPrivate": isPrivate,
+        "users": users,
+        "adminIds": adminIds,
         "image": image,
-        "email": email,
-        "id": id,
-        "lastActive": lastActive,
-        "pushToken": pushToken
+        "groupId": groupId,
+        "groupName": groupName
       };
 }

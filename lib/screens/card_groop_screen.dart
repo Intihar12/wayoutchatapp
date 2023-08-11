@@ -5,7 +5,7 @@
 // import 'package:wayoutchatapp/modals/messages_modal.dart';
 //
 // import '../main.dart';
-// import '../modals/chat_user_modal.dart';
+// import '../modals/user_modal.dart';
 // import '../screens/chat_screen.dart';
 // import '../screens/date_formated.dart';
 // import '../widgets/dialods/profile_dialog.dart';

@@ -1,13 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:wayoutchatapp/screens/view_profile_screen.dart';
-
-import '../../main.dart';
-import '../../modals/chat_user_modal.dart';
+import 'package:wayoutchatapp/barrel.dart';
 
 class ProfileDialog extends StatelessWidget {
   ProfileDialog({Key? key, required this.user}) : super(key: key);
-  final ChatUserModal user;
+  final UserModal user;
 
   @override
   Widget build(BuildContext context) {

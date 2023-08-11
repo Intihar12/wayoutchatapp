@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../api/apis.dart';
 import '../main.dart';
-import '../modals/chat_user_modal.dart';
+import '../modals/user_modal.dart';
 import '../modals/messages_modal.dart';
 import '../screens/date_formated.dart';
 

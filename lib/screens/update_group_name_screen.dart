@@ -1,11 +1,9 @@
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:wayoutchatapp/api/apis.dart';
-
-import '../main.dart';
+import 'package:wayoutchatapp/barrel.dart';
 
 class UpdateGroupName extends StatefulWidget {
-  const UpdateGroupName({Key? key}) : super(key: key);
+  UpdateGroupName({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<UpdateGroupName> createState() => _UpdateGroupNameState();
@@ -55,7 +53,7 @@ class _UpdateGroupNameState extends State<UpdateGroupName> {
                               setState(() => _isEmoji = !_isEmoji);
                             }
                           },
-                          decoration: InputDecoration(hintText: "update group name 👏"),
+                          decoration: InputDecoration(hintText: Apis.groupName ?? "update group name 👏"),
                         )),
                     SizedBox(
                       width: 20,

@@ -1,25 +1,11 @@
-import 'dart:io';
+import 'package:provider/provider.dart';
+import 'package:wayoutchatapp/barrel.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:wayoutchatapp/modals/chat_user_modal.dart';
-import 'package:wayoutchatapp/screens/auth/login_screen.dart';
-
-import '../api/apis.dart';
-import '../api/apis.dart';
-import '../diologs/diologs_screen.dart';
-import '../main.dart';
+import '../provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({Key? key, required this.user})
-      : super(
-          key: key,
-        );
-  ChatUserModal user;
+  ProfileScreen({Key? key, required this.user}) : super(key: key);
+  UserModal user;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -31,6 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ThemeProvider themeChanger = Provider.of<ThemeProvider>(context, listen: false);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -76,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: Image.file(
                                   File(_image!),
                                   width: mq.width * .3,
-                                  // height: mq.height * .2,
+                                  height: mq.width * .3,
                                   fit: BoxFit.fill,
                                 ),
                               )
@@ -84,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 borderRadius: BorderRadius.circular(mq.height * .1),
                                 child: CachedNetworkImage(
                                   width: mq.width * .3,
-                                  // height: mq.height * .2,
+                                  height: mq.width * .3,
                                   fit: BoxFit.fill,
                                   imageUrl: widget.user.image!,
                                   placeholder: (context, url) => CircularProgressIndicator(),
@@ -119,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   TextFormField(
                     initialValue: widget.user.name,
-                    onSaved: (val) => Apis.me.name = val ?? '',
+                    onSaved: (val) => Apis.me?.name = val ?? '',
                     validator: (val) => val != null && val.isNotEmpty ? null : "required field",
                     decoration: InputDecoration(
                         prefix: Icon(
@@ -135,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   TextFormField(
                     initialValue: widget.user.about,
-                    onSaved: (val) => Apis.me.about = val ?? '',
+                    onSaved: (val) => Apis.me?.about = val ?? '',
                     validator: (val) => val != null && val.isNotEmpty ? null : "required field",
                     decoration: InputDecoration(
                         prefix: Icon(
@@ -162,8 +149,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         shape: StadiumBorder(),
                         minimumSize: Size(mq.width * 0.6, mq.height * .05)),
                     icon: Icon(Icons.edit),
-                    label: Text("Update"),
-                  )
+                    label: Text(
+                      "Update",
+                    ),
+                  ),
+                  RadioListTile<ThemeMode>(
+                    title: Text(
+                      "Light mode",
+                      //style: TextStyle(color: themeChanger.themeMode == ThemeMode.dark ? Colors.white : Colors.black),
+                    ),
+                    value: ThemeMode.light,
+                    groupValue: Provider.of<ThemeProvider>(context, listen: false).themeMode,
+                    onChanged: (ThemeMode? value) {
+                      Provider.of<ThemeProvider>(context, listen: false).setTheme(value!);
+                    },
+                    // Provider.of<ThemeProvider>(context, listen: false).setTheme(ThemeMode.light),
+                  ),
+                  RadioListTile<ThemeMode>(
+                    title: Text("Dark mode"),
+                    value: ThemeMode.dark,
+                    groupValue: Provider.of<ThemeProvider>(context, listen: false).themeMode,
+                    onChanged: (ThemeMode? value) {
+                      Provider.of<ThemeProvider>(context, listen: false).setTheme(value!);
+                    },
+                    // onChanged:()=> (context).read<ThemeProvider>().setTheme(ThemeMode.dark),
+                    // Provider.of<ThemeProvider>(context, listen: false).setTheme(ThemeMode.dark)
+                  ),
                 ],
               ),
             ),

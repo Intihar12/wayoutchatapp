@@ -1,11 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:wayoutchatapp/api/apis.dart';
-import 'package:wayoutchatapp/screens/home_screen.dart';
-
-import '../../main.dart';
-import 'auth/login_screen.dart';
+import 'package:wayoutchatapp/barrel.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -16,10 +9,15 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool isAnimate = false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("splash");
+    // Future.delayed(Duration(seconds: 4), () async {
+    //   await Apis.initDynamicLinks(context);
+    // });
     if (Apis.auth.currentUser != null) {
       print("/user :: ${Apis.auth.currentUser}");
       Future.delayed(Duration(milliseconds: 5), () {
@@ -42,7 +40,11 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
       body: Stack(
         children: [
-          Positioned(top: mq.height * .15, right: mq.width * .25, width: mq.width * .5, child: Icon(Icons.markunread_outlined)),
+          Positioned(
+              top: mq.height * .15,
+              right: mq.width * .25,
+              width: mq.width * .5,
+              child: Icon(Icons.markunread_outlined)),
           Positioned(
               bottom: mq.height * .15,
               width: mq.width,

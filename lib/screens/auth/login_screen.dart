@@ -1,15 +1,4 @@
-import 'dart:io';
-import 'dart:math';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:wayoutchatapp/screens/home_screen.dart';
-
-import '../../api/apis.dart';
-import '../../diologs/diologs_screen.dart';
-import '../../main.dart';
+import 'package:wayoutchatapp/barrel.dart';
 
 class LoginHomeScreen extends StatefulWidget {
   const LoginHomeScreen({Key? key}) : super(key: key);
@@ -20,10 +9,15 @@ class LoginHomeScreen extends StatefulWidget {
 
 class _LoginHomeScreenState extends State<LoginHomeScreen> {
   bool isAnimate = false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("login screen is");
+    // Future.delayed(Duration(seconds: 4), () async {
+    //   await Apis.initDynamicLinks(context);
+    // });
     Future.delayed(Duration(milliseconds: 500), () {
       setState(() {
         isAnimate = true;

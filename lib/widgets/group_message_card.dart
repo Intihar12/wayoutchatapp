@@ -17,7 +17,7 @@
 //
 // import '../diologs/diologs_screen.dart';
 // import '../main.dart';
-// import '../modals/chat_user_modal.dart';
+// import '../modals/user_modal.dart';
 // import '../screens/date_formated.dart';
 //
 // class MessageCard extends StatefulWidget {
@@ -608,29 +608,10 @@
 // }
 
 //import 'package:audioplayers/audioplayers.dart';
-import 'dart:async';
-import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:date_format/date_format.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:gallery_saver/gallery_saver.dart';
-import 'package:grouped_list/grouped_list.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:wayoutchatapp/barrel.dart';
 
-//import 'package:just_audio/just_audio.dart';
-import 'package:wayoutchatapp/api/apis.dart';
-import 'package:wayoutchatapp/modals/messages_modal.dart';
-//import 'package:just_audio/just_audio.dart';
-
-import '../diologs/diologs_screen.dart';
-import '../main.dart';
-import '../modals/chat_user_modal.dart';
-import '../screens/date_formated.dart';
+import 'package:just_audio/just_audio.dart' as just;
 
 class GroupMessageCard extends StatefulWidget {
   GroupMessageCard({
@@ -643,7 +624,7 @@ class GroupMessageCard extends StatefulWidget {
   String? image;
 
   // bool? isOnline;
-  ChatUserModal user;
+  UserModal user;
 
   @override
   State<GroupMessageCard> createState() => _GroupMessageCardState();
@@ -660,11 +641,11 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
   List<MessagesModal> intuuList = [];
 
   // todo for play
-  final _audioPlayer = AudioPlayer();
+  final _audioPlayer = just.AudioPlayer();
   bool playStop = false;
   late Future<Duration?> futureDuration;
 
-  late StreamSubscription<PlayerState> _playerStateChangedSubscription;
+  late StreamSubscription<just.PlayerState> _playerStateChangedSubscription;
 
   @override
   void initState() {
@@ -673,13 +654,13 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
 
     playStop = !playStop;
     _playerStateChangedSubscription = _audioPlayer.playerStateStream.listen(playerStateListener);
-    futureDuration = _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(widget.message.msg.toString())));
+    futureDuration = _audioPlayer.setAudioSource(just.AudioSource.uri(Uri.parse(widget.message.msg.toString())));
 
     // _initialiseControllers();
   }
 
-  void playerStateListener(PlayerState state) async {
-    if (state.processingState == ProcessingState.completed) {
+  void playerStateListener(just.PlayerState state) async {
+    if (state.processingState == just.ProcessingState.completed) {
       await reset();
     }
   }
@@ -782,13 +763,13 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             StreamBuilder(
-                stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                stream: Apis.getUserGroupFormIdInfo(widget.message.fromId.toString()),
                 builder: (context, snapshot) {
                   print("testing k");
                   final data = snapshot.data?.docs;
 
                   //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
-                  final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                  final list = data?.map((e) => UserModal.fromJson(e.data())).toList() ?? [];
                   //Apis.isgroup = list[0].isGroup;
                   print("group info in message card");
                   print(Apis.isgroup);
@@ -830,13 +811,13 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   StreamBuilder(
-                      stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                      stream: Apis.getUserGroupFormIdInfo(widget.message.fromId.toString()),
                       builder: (context, snapshot) {
                         print("testing k");
                         final data = snapshot.data?.docs;
 
                         //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
-                        final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                        final list = data?.map((e) => UserModal.fromJson(e.data())).toList() ?? [];
                         //Apis.isgroup = list[0].isGroup;
                         print("group info in message card");
                         print(Apis.isgroup);
@@ -860,13 +841,13 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
                       ),
                       isMe
                           ? StreamBuilder(
-                              stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                              stream: Apis.getUserGroupFormIdInfo(widget.message.fromId.toString()),
                               builder: (context, snapshot) {
                                 print("testing k");
                                 final data = snapshot.data?.docs;
 
                                 //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
-                                final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                                final list = data?.map((e) => UserModal.fromJson(e.data())).toList() ?? [];
                                 //Apis.isgroup = list[0].isGroup;
                                 print("group info in message card");
                                 print(Apis.isgroup);
@@ -892,13 +873,13 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
                       isMe
                           ? SizedBox()
                           : StreamBuilder(
-                              stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                              stream: Apis.getUserGroupFormIdInfo(widget.message.fromId.toString()),
                               builder: (context, snapshot) {
                                 print("testing k");
                                 final data = snapshot.data?.docs;
 
                                 //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
-                                final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                                final list = data?.map((e) => UserModal.fromJson(e.data())).toList() ?? [];
                                 //Apis.isgroup = list[0].isGroup;
                                 print("group info in message card");
                                 print(Apis.isgroup);
@@ -955,13 +936,13 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               StreamBuilder(
-                  stream: Apis.getUserGroupInfo(widget.message.fromId.toString()),
+                  stream: Apis.getUserGroupFormIdInfo(widget.message.fromId.toString()),
                   builder: (context, snapshot) {
                     print("testing k");
                     final data = snapshot.data?.docs;
 
                     //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
-                    final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                    final list = data?.map((e) => UserModal.fromJson(e.data())).toList() ?? [];
                     //Apis.isgroup = list[0].isGroup;
                     print("group info in message card");
                     print(Apis.isgroup);
@@ -1010,7 +991,7 @@ class _GroupMessageCardState extends State<GroupMessageCard> {
           final data = snapshot.data?.docs;
 
           //final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
-          final list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+          final list = data?.map((e) => UserModal.fromJson(e.data())).toList() ?? [];
           //Apis.isgroup = list[0].isGroup;
           print("group info in message card");
           print(Apis.isgroup);

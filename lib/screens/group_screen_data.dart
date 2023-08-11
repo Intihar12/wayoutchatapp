@@ -7,7 +7,7 @@ import 'package:wayoutchatapp/main.dart';
 import 'package:wayoutchatapp/screens/card_groop_screen.dart';
 
 import '../api/apis.dart';
-import '../modals/chat_user_modal.dart';
+import '../modals/user_modal.dart';
 import '../widgets/cart_chat_user.dart';
 import '../widgets/dialods/profile_dialog.dart';
 
@@ -20,10 +20,10 @@ class GroupScreenData extends StatefulWidget {
 
 class _GroupScreenDataState extends State<GroupScreenData> {
   TextEditingController groupNameController = TextEditingController();
-  List<ChatUserModal> list = [];
-  final List<ChatUserModal> searchList = [];
+  List<UserModal> list = [];
+  final List<UserModal> searchList = [];
   bool isSearch = false;
-  List<ChatUserModal> gropuLists = [];
+  List<UserModal> gropuLists = [];
   String? _image;
   final formKey = GlobalKey<FormState>();
 
@@ -38,14 +38,14 @@ class _GroupScreenDataState extends State<GroupScreenData> {
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     _image == null
-                        ? Apis.createGroup(groupNameController.text, "")
-                        : Apis.createGroupImage(groupNameController.text, File(_image!));
-                    print("buguuu");
-                    //Apis.saveMembers(Apis.members);
-                    // Apis.createUserff();
+                        ? Apis.createGroup(context, groupNameController.text, "")
+                        : Apis.createGroupImage(context, groupNameController.text, File(_image!));
+
                     Navigator.pop(context);
-                    print("daban bugu");
+
+                    setState(() {});
                   }
+                  setState(() {});
                 },
                 backgroundColor: Colors.teal,
                 child: Icon(Icons.done),

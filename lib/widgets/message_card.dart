@@ -17,7 +17,7 @@
 //
 // import '../diologs/diologs_screen.dart';
 // import '../main.dart';
-// import '../modals/chat_user_modal.dart';
+// import '../modals/user_modal.dart';
 // import '../screens/date_formated.dart';
 //
 // class MessageCard extends StatefulWidget {
@@ -617,10 +617,12 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 //import 'package:just_audio/just_audio.dart';
 import 'package:wayoutchatapp/api/apis.dart';
@@ -629,7 +631,7 @@ import 'package:wayoutchatapp/modals/messages_modal.dart';
 
 import '../diologs/diologs_screen.dart';
 import '../main.dart';
-import '../modals/chat_user_modal.dart';
+import '../modals/user_modal.dart';
 import '../screens/date_formated.dart';
 
 class MessageCard extends StatefulWidget {
@@ -638,7 +640,7 @@ class MessageCard extends StatefulWidget {
   final MessagesModal message;
   String? image;
   bool? isOnline;
-  ChatUserModal user;
+  UserModal user;
 
   @override
   State<MessageCard> createState() => _MessageCardState();
@@ -762,12 +764,6 @@ class _MessageCardState extends State<MessageCard> {
     print("widget.message.fromId");
     print(widget.message.fromId);
     bool isMe = Apis.user.uid == widget.message.fromId;
-    // print("ismjkjk");
-    // print(isMeUser);
-    // bool isMeGroup = widget.user.id == widget.message.fromId;
-    // print(isMeGroup);
-    // bool isMe = Apis.isgroup == true ? isMeGroup : isMeUser;
-    // print(isMe);
 
     print("type");
     print(type);
@@ -841,25 +837,34 @@ class _MessageCardState extends State<MessageCard> {
           },
         );
 
-      // InkWell(
-      //   onTap: () async {
-      //     print("playsound");
-      //     print(playStop);
-      //     playStop = !playStop;
-      //     playStop ? await audioPlayer.play(UrlSource(widget.message.msg.toString())) : await audioPlayer.pause();
-      //     print("soundd");
-      //     print(playStop);
-      //     setState(() {});
-      //     // await playVoiceMessage(widget.message.msg.toString());
-      //   },
-      //   child: Text("click me"));
-
       case Type.text:
         return Container(
-          child: Text(
-            "${widget.message.msg.toString()}" + "               ",
-            style: TextStyle(fontSize: 15, color: Colors.black87),
+          child: Linkify(
+            // options: LinkifyOptions(humanize: true),
+            onOpen: (link) async {
+              print("this is link");
+
+              print(link.url);
+              if (await canLaunchUrl(Uri.parse(link.url))) {
+                print(link.url);
+                print("link is link");
+                await launchUrl(Uri.parse(link.url), mode: LaunchMode.externalNonBrowserApplication);
+                //Apis.initDynamicLinks(context);
+                //throw Exception('Could not launch ${link.url}');
+              } else {
+                print("else link");
+                //  Apis.initDynamicLinks(context);
+              }
+            },
+            text: "${widget.message.msg.toString()}" + "               ",
+            style: TextStyle(color: Colors.black45),
+            linkStyle: TextStyle(color: Colors.blue),
+            //options: LinkifyOptions(humanize: false),
           ),
+          // child: Text(
+          //   "${widget.message.msg.toString()}" + "               ",
+          //   style: TextStyle(fontSize: 15, color: Colors.black87),
+          // ),
         );
 
       default:
@@ -897,29 +902,6 @@ class _MessageCardState extends State<MessageCard> {
         SizedBox(
           width: mq.width * .15,
         ),
-        // Row(
-        //   children: [
-        //     SizedBox(
-        //       width: mq.width * .01,
-        //     ),
-        //     if (widget.message.read != null)
-        //       IconButton(
-        //           onPressed: () {},
-        //           icon: Icon(
-        //             Icons.done_all_rounded,
-        //             color: Colors.blue,
-        //             size: mq.width * .06,
-        //           )),
-        //     SizedBox(
-        //       width: mq.width * .001,
-        //     ),
-        //     Text(
-        //       //  widget.message.sent.toString(),
-        //       MyDateUtils.getFormatTime(context, widget.message.sent),
-        //       style: TextStyle(fontSize: 11, color: Colors.black54),
-        //     ),
-        //   ],
-        // ),
         Flexible(
           child: Container(
             // width: widget.message.type == Type.text ? mq.width * .3 : null,

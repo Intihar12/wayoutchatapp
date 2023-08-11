@@ -1,26 +1,11 @@
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:wayoutchatapp/modals/chat_user_modal.dart';
-import 'package:wayoutchatapp/screens/auth/login_screen.dart';
-
-import '../api/apis.dart';
-import '../api/apis.dart';
-import '../diologs/diologs_screen.dart';
-import '../main.dart';
-import 'date_formated.dart';
+import 'package:wayoutchatapp/barrel.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   ViewProfileScreen({Key? key, required this.user})
       : super(
           key: key,
         );
-  ChatUserModal user;
+  UserModal user;
 
   @override
   State<ViewProfileScreen> createState() => _ViewProfileScreenState();

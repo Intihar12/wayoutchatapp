@@ -1,21 +1,8 @@
-import 'dart:async';
+import 'package:provider/provider.dart';
+import 'package:wayoutchatapp/barrel.dart';
+import 'package:wayoutchatapp/provider/provider.dart';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:wayoutchatapp/screens/group_screen.dart';
-import 'package:wayoutchatapp/screens/profile_screen.dart';
-
-import '../api/apis.dart';
-import '../diologs/diologs_screen.dart';
-import '../main.dart';
 import '../modals/chat_user_modal.dart';
-import '../voice_chat/voice_chat.dart';
-import '../widgets/cart_chat_user.dart';
-import 'notification_services.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -25,8 +12,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<ChatUserModal> list = [];
-  final List<ChatUserModal> searchList = [];
+  List<UserModal> list = [];
+  List<ChatUserModal> listGroupData = [];
+  final List<UserModal> searchList = [];
   bool isSearch = false;
 
   ConnectivityResult? _connectivityResult;
@@ -43,13 +31,23 @@ class _HomeScreenState extends State<HomeScreen> {
   //   // }
   //   //);
   // }
+  // final themeChanger = Provider.of<ThemeProvider>(context);
 
   @override
   void initState() {
-    // TODO: implement initState
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<ThemeProvider>(context, listen: false).getTheme();
+    });
+    // Provider.of<ThemeProvider>(context, listen: false).getTheme();
+
     Apis.isSelfInfo(context);
     super.initState();
+    Future.delayed(Duration(seconds: 2), () async {
+      await Apis.initDynamicLinks(context);
+    });
     Apis.checkNetConnectivity();
+    Apis.getMyUsersIds();
+    //Apis.initDynamicLinks(context);
     // _startConnectivityCheck();
     // Apis.checkNetConnectivity();
     SystemChannels.lifecycle.setMessageHandler((message) {
@@ -67,11 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  List listOfUsers = [];
+
   @override
   Widget build(BuildContext context) {
+    //Apis.initDynamicLinks(context);
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: WillPopScope(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: WillPopScope(
           onWillPop: () {
             if (isSearch) {
               setState(() {
@@ -83,158 +84,201 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           },
           child: Scaffold(
-            floatingActionButton: Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: FloatingActionButton(
-                onPressed: () async {
-                  print("buguuu");
-                  //Apis.saveMembers(Apis.members);
-                  // Apis.createUserff();
-                  print("daban bugu");
-                  addUserDialog();
-                },
-                backgroundColor: Colors.teal,
-                child: Icon(Icons.add_comment),
-              ),
-            ),
-            appBar: AppBar(
-              leading: Icon(Icons.home_outlined),
-              title: isSearch
-                  ? TextField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Name,email...",
-                      ),
-                      autofocus: true,
-                      style: TextStyle(fontSize: 17, letterSpacing: 0.5),
-                      onChanged: (value) {
-                        searchList.clear();
-
-                        for (var i in list) {
-                          if (i.name!.toLowerCase().contains(value.toLowerCase()) ||
-                              i.email!.toLowerCase().contains(value.toLowerCase())) {
-                            searchList.add(i);
-                          }
-                          setState(() {
-                            searchList;
-                          });
-                        }
-                      },
-                    )
-                  : Text("We chat"),
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isSearch = !isSearch;
-                      });
-                    },
-                    icon: Icon(isSearch ? Icons.clear : Icons.search)),
-                // IconButton(
-                //     onPressed: () {
-                //       // Navigator.push(
-                //       //     context,
-                //       //     MaterialPageRoute(
-                //       //         builder: (_) => AudioWave(
-                //       //                message:  ,
-                //       //             )));
-                //       Navigator.push(
-                //           context,
-                //           MaterialPageRoute(
-                //               builder: (_) => ProfileScreen(
-                //                     user: Apis.me,
-                //                   )));
-                //     },
-                //     icon: Icon(Icons.more_vert)),
-
-                // todo popupmenue
-
-                PopupMenuButton<int>(
-                  icon: Icon(
-                    Icons.more_vert,
-                    color: Colors.black,
-                  ),
-                  itemBuilder: (context) => [
-                    // PopupMenuItem 1
-
-                    PopupMenuItem(
-                      value: 1,
-                      // row with 2 children
-                      child: Row(
-                        children: [
-                          //Icon(Icons.settings),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "Profile",
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
-                      ),
-                    ),
-                    // PopupMenuItem 2
-                    PopupMenuItem(
-                      value: 2,
-                      // row with two children
-                      child: Row(
-                        children: [
-                          //Icon(Icons.update),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "New Group",
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                  offset: Offset(0, 40),
-                  color: Colors.teal,
-                  elevation: 2,
-                  // on selected we show the dialog box
-                  onSelected: (value) {
-                    // if value 1 show dialog
-                    if (value == 1) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    user: Apis.me,
-                                  )));
-                      // deleteSupplierBottomSheet(context);
-                      //controller.buttonLoading.value = true;
-                      // _showDialog(context);
-                      // if value 2 show dialog
-                    } else if (value == 2) {
-                      //  controller.buttonLoading.value = true;
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => GroupScreen()));
-                      //UpdateSupplierBottomSheet(context);
-                      // _showDialog(context);
-                    }
+              floatingActionButton: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    // print("buguuu");
+                    // //Apis.saveMembers(Apis.members);
+                    // // Apis.createUserff();
+                    // print("daban bugu");
+                    addUserDialog();
                   },
+                  backgroundColor: Colors.teal,
+                  child: Icon(Icons.add_comment),
                 ),
-              ],
-            ),
-            body: StreamBuilder(
-              stream: Apis.getMyUsersId(),
-              builder: (context, snapShot) {
-                switch (snapShot.connectionState) {
-                  case ConnectionState.waiting:
-                  case ConnectionState.none:
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  case ConnectionState.active:
-                  case ConnectionState.done:
-                    print("darta ::");
-                    print(snapShot.data?.docs);
-                    return StreamBuilder(
-                        stream: Apis.getAllUsers(snapShot.data?.docs.map((e) => e.id).toList() ?? []),
+              ),
+              appBar: AppBar(
+                leading: Icon(Icons.home_outlined),
+                title: isSearch
+                    ? TextField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Name,email...",
+                        ),
+                        autofocus: true,
+                        style: TextStyle(fontSize: 17, letterSpacing: 0.5),
+                        onChanged: (value) {
+                          searchList.clear();
+
+                          for (var i in list) {
+                            if (i.name!.toLowerCase().contains(value.toLowerCase()) ||
+                                i.email!.toLowerCase().contains(value.toLowerCase())) {
+                              searchList.add(i);
+                            }
+                            setState(() {
+                              searchList;
+                            });
+                          }
+                        },
+                      )
+                    : Text("We chat"),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isSearch = !isSearch;
+                        });
+                      },
+                      icon: Icon(isSearch ? Icons.clear : Icons.search)),
+                  // IconButton(
+                  //     onPressed: () {
+                  //       // Navigator.push(
+                  //       //     context,
+                  //       //     MaterialPageRoute(
+                  //       //         builder: (_) => AudioWave(
+                  //       //                message:  ,
+                  //       //             )));
+                  //       Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //               builder: (_) => ProfileScreen(
+                  //                     user: Apis.me,
+                  //                   )));
+                  //     },
+                  //     icon: Icon(Icons.more_vert)),
+
+                  // todo popupmenue
+
+                  PopupMenuButton<int>(
+                    icon: Icon(
+                      Icons.more_vert,
+                      // color: Colors.black,
+                    ),
+                    itemBuilder: (context) => [
+                      // PopupMenuItem 1
+
+                      PopupMenuItem(
+                        value: 1,
+                        // row with 2 children
+                        child: Row(
+                          children: [
+                            //Icon(Icons.settings),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "Profile",
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                      // PopupMenuItem 2
+                      PopupMenuItem(
+                        value: 2,
+                        // row with two children
+                        child: Row(
+                          children: [
+                            //Icon(Icons.update),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "New Group",
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                    offset: Offset(0, 40),
+                    color: Colors.teal,
+                    elevation: 2,
+                    // on selected we show the dialog box
+                    onSelected: (value) {
+                      // if value 1 show dialog
+                      if (value == 1) {
+                        Apis.creatGroupDynamicLink();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => ProfileScreen(
+                                      user: Apis.me!,
+                                    )));
+                        // deleteSupplierBottomSheet(context);
+                        //controller.buttonLoading.value = true;
+                        // _showDialog(context);
+                        // if value 2 show dialog
+                      } else if (value == 2) {
+                        //  controller.buttonLoading.value = true;
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => GroupScreen()));
+                        //UpdateSupplierBottomSheet(context);
+                        // _showDialog(context);
+                      }
+                    },
+                  ),
+                ],
+              ),
+              body: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('chats')
+                      .orderBy("latestActive", descending: true)
+                      .where("users", arrayContains: Apis.user.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    final data = snapshot.data?.docs;
+                    listGroupData =
+                        data?.map((e) => ChatUserModal.fromJson(e.data() as Map<String, dynamic>)).toList() ?? [];
+                    // print("listGroupData");
+                    // print(listGroupData);
+                    // print(listGroupData.length);
+                    //List getId = [];
+                    // List getIds = [];
+                    // print("data");
+                    // print(data);
+                    // data?.forEach((element) {
+                    //   List getId = element['users'];
+                    //   getId.forEach((entry) {
+                    //     if (getIds.contains(entry)) {
+                    //       //chatMessages.remove(entry);
+                    //     } else {
+                    //       getIds.add(entry);
+                    //     }
+                    //   });
+                    // });
+                    //
+                    // if (getIds.contains(Apis.user.uid)) {
+                    //   getIds.remove(Apis.user.uid);
+                    // }
+                    List? getIde = [];
+                    listGroupData.forEach((element) {
+                      if (element.isPrivate == true) {
+                        List? getIdes = element.users;
+                        getIdes?.forEach((entry) {
+                          if (getIde.contains(entry)) {
+                            // getIde.add(entry);
+                            //chatMessages.remove(entry);
+                          } else {
+                            getIde.add(entry);
+                          }
+                        });
+                      }
+                    });
+
+                    if (getIde.contains(Apis.user.uid)) {
+                      getIde.remove(Apis.user.uid);
+                    }
+
+                    print("streem");
+                    // print("getIde");
+                    // print(getIde);
+                    // print("getIds");
+                    //   print(getIds);
+
+                    return FutureBuilder(
+                        future: Apis.getAllGroupUsers(getIde),
                         builder: (contexts, snapshot) {
-                          // print("intuu snapshot: ${snapshot}");
                           switch (snapshot.connectionState) {
                             case ConnectionState.waiting:
                             case ConnectionState.none:
@@ -243,30 +287,47 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             case ConnectionState.active:
                             case ConnectionState.done:
-                              final data = snapshot.data?.docs;
+                              final data = snapshot.data;
+                              //
+                              list = data?.map((e) => UserModal.fromJson(e.data() as Map<String, dynamic>?)).toList() ??
+                                  [];
+                              print("future");
 
-                              list = data?.map((e) => ChatUserModal.fromJson(e.data())).toList() ?? [];
+                              //   if (list.isNotEmpty) {
+                              return ListView.builder(
+                                  itemCount: isSearch ? searchList.length : listGroupData.length,
+                                  padding: EdgeInsets.only(top: mq.height * .01),
+                                  physics: BouncingScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    // print("index");
+                                    // print(index);
+                                    int indexs;
 
-                              if (list.isNotEmpty) {
-                                return ListView.builder(
-                                    itemCount: isSearch ? searchList.length : list.length,
-                                    padding: EdgeInsets.only(top: mq.height * .01),
-                                    physics: BouncingScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return CartChatUser(
-                                        user: isSearch ? searchList[index] : list[index],
-                                      );
-                                    });
-                              } else {
-                                return Center(child: Text("No connection is found"));
-                              }
+                                    int listIndex = indexs;
+                                    if (listGroupData[index].isPrivate == false) {
+                                      // print("before :${listIndex}");
+                                      // int? hjhj;
+                                      // hjhj++;
+                                      listIndex++;
+                                      //  print("after :${listIndex}");
+                                    }
+                                    print("before :${listIndex}");
+                                    return listGroupData[index].isPrivate == false
+                                        ? GroupCartChatUser(
+                                            user: listGroupData[index],
+                                          )
+                                        : CartChatUser(
+                                            user: isSearch ? searchList[index] : list[listIndex],
+                                          );
+                                  });
                           }
+                          // else {
+                          //   return Center(child: Text("No connection is found"));
+                          // }
+                          // }
                         });
-                }
-              },
-            ),
-          )),
-    );
+                  })),
+        ));
   }
 
   void addUserDialog() {
@@ -310,18 +371,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialButton(
                   onPressed: () async {
                     if (email.isNotEmpty) {
-                      print("email");
-                      print(email);
-                      await Apis.addChatUser(email).then((value) {
-                        print(value);
-                        print("value");
+                      // print("email");
+                      // print(email);
+                      await Apis.addChatUser(email, DateTime.now()).then((value) {
+                        // print(value);
+                        // print("value");
                         if (!value) {
                           Dialogs.showSnackBar(context, "User not exist");
                         }
+                      }).whenComplete(() {
+                        Apis.getMyUsersIds();
+                        Navigator.pop(context);
+                        setState(() {});
                       });
-
-                      Navigator.pop(context);
                     }
+                    setState(() {});
                   },
                   child: Text(
                     "Add",

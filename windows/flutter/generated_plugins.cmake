@@ -3,10 +3,15 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  agora_rtc_engine
   audioplayers_windows
+  awesome_notifications
   connectivity_plus
   emoji_picker_flutter
   firebase_core
+  flutter_webrtc
+  iris_method_channel
+  permission_handler_windows
   record_windows
   url_launcher_windows
 )

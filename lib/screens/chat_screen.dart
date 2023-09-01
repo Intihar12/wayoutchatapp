@@ -1069,11 +1069,20 @@ import 'package:wayoutchatapp/barrel.dart';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:wayoutchatapp/modals/chat_user_modal.dart';
+import 'package:wayoutchatapp/screens/voice_call_screen.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import '../modals/call.dart';
 
 class ChatScreen extends StatefulWidget {
-  ChatScreen({Key? key, this.user, this.groupChat}) : super(key: key);
+  ChatScreen({
+    Key? key,
+    this.user,
+    this.groupChat,
+  }) : super(key: key);
   final UserModal? user;
   final ChatUserModal? groupChat;
+
+  //final ReceivedAction? receivedAction;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -1129,6 +1138,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     _initialiseController();
 
     Apis.isgroup = widget.user?.isGroup;
@@ -1282,19 +1292,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                       var date = DateTime.now();
                                       String newDate = formatDate(date, [dd, yyyy, D]);
 
-                                      return Apis.isgroup == true
-                                          ? GroupMessageCard(
-                                              message: element,
-                                              image: list.isNotEmpty ? list[0].image.toString() : widget.user?.image!,
-                                              user: Apis.me!,
-                                            )
-                                          : MessageCard(
-                                              // isOnline: list[0].isOnline,
-                                              isOnline: widget.user?.isOnline,
-                                              message: element,
-                                              image: list.isNotEmpty ? list[0].image.toString() : widget.user?.image!,
-                                              user: Apis.me!,
-                                            );
+                                      return MessageCard(
+                                        // isOnline: list[0].isOnline,
+                                        isOnline: widget.user?.isOnline,
+                                        message: element,
+                                        image: list.isNotEmpty ? list[0].image.toString() : widget.user?.image!,
+                                        user: Apis.me!,
+                                      );
                                     },
                                   ),
                                 )
@@ -1426,6 +1430,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     // )
                   ],
                 ),
+                SizedBox(
+                  width: 20,
+                ),
+                IconButton(
+                    onPressed: () {
+                      _showAlertDialog(context, list[0].name.toString(), list[0].id.toString(), widget.user!);
+                    },
+                    icon: Icon(
+                      Icons.call,
+                      color: Colors.teal,
+                    ))
                 // Spacer(),
                 // Apis.isgroup == true
                 //     ? PopupMenuButton<int>(
@@ -1774,6 +1789,92 @@ class _ChatScreenState extends State<ChatScreen> {
                 )
         ],
       ),
+    );
+  }
+
+  void _showAlertDialog(BuildContext context, String name, String id, UserModal user) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Padding(
+            padding: const EdgeInsets.only(top: 10.0, bottom: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  "Start voice call?",
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          // Apis.groupAdmin(context, id);
+                        },
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15, color: Colors.teal),
+                        )),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => VideoPage(
+                                        user: user,
+                                        call: CallModel(
+                                          id: null,
+                                          channel: "video${Apis.currentUser}${user.id}",
+                                          caller: Apis.currentUser,
+                                          called: user.id!,
+                                          active: null,
+                                          accepted: null,
+                                          rejected: null,
+                                          connected: null,
+                                        ),
+                                      )));
+                          // Apis.groupAdmin(context, id);
+                        },
+                        child: Text(
+                          "Call",
+                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15, color: Colors.teal),
+                        )),
+                  ],
+                )
+              ],
+            ),
+          ),
+          // content: Text(email.toString()),
+          // actions: [
+          //   Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     mainAxisAlignment: MainAxisAlignment.start,
+          //     children: [
+          //       InkWell(
+          //           onTap: () {
+          //             _deleteParticipant(context, name, id);
+          //           },
+          //           child: Text("Remove Participant")),
+          //       InkWell(
+          //           onTap: () {
+          //             Apis.groupAdmin(context, id);
+          //           },
+          //           child: Text("Make group admin"))
+          //     ],
+          //   ),
+          // ],
+        );
+      },
     );
   }
 }

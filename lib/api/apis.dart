@@ -6,6 +6,8 @@ import '../screens/group_invite_sheet.dart';
 class Apis {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore fireStore = FirebaseFirestore.instance;
+  static CollectionReference callsCollection = FirebaseFirestore.instance.collection("calls");
+  static String currentUser = FirebaseAuth.instance.currentUser!.uid;
   static FirebaseStorage storage = FirebaseStorage.instance;
   static UserModal? me;
 

@@ -1,11 +1,15 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:wayoutchatapp/barrel.dart';
 import 'package:wayoutchatapp/provider/provider.dart';
+import 'package:wayoutchatapp/screens/voice_call_screen.dart';
 
+import '../modals/call.dart';
 import '../modals/chat_user_modal.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({Key? key, this.receivedAction}) : super(key: key);
+  final ReceivedAction? receivedAction;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -32,6 +36,34 @@ class _HomeScreenState extends State<HomeScreen> {
   //   //);
   // }
   // final themeChanger = Provider.of<ThemeProvider>(context);
+  handleNotification() {
+    print("handleNotification in chate screen");
+    if (widget.receivedAction != null) {
+      Map userMap = widget.receivedAction!.payload!;
+      print("userMap[" "]");
+      print(userMap["name"]);
+      UserModal user =
+          UserModal(id: userMap['user'], name: userMap['name'], image: userMap['photo'], email: userMap['email']);
+      CallModel call = CallModel(
+        id: userMap['id'],
+        channel: userMap['channel'],
+        caller: userMap['caller'],
+        called: userMap['called'],
+        active: jsonDecode(userMap['active']),
+        accepted: true,
+        rejected: jsonDecode(userMap['rejected']),
+        connected: true,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return VideoPage(call: call, user: user);
+          },
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -42,6 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Apis.isSelfInfo(context);
     super.initState();
+
+    Future.delayed(const Duration(milliseconds: 1000)).then(
+      (value) {
+        handleNotification();
+      },
+    );
     Future.delayed(Duration(seconds: 2), () async {
       await Apis.initDynamicLinks(context);
     });
@@ -301,23 +339,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   itemBuilder: (context, index) {
                                     // print("index");
                                     // print(index);
-                                    int indexs;
+                                    // int indexs;
 
-                                    int listIndex = indexs;
-                                    if (listGroupData[index].isPrivate == false) {
-                                      // print("before :${listIndex}");
-                                      // int? hjhj;
-                                      // hjhj++;
-                                      listIndex++;
-                                      //  print("after :${listIndex}");
+                                    int listIndex = 0;
+                                    for (int i = 0; i <= index; i++) {
+                                      if (listGroupData[i].isPrivate == true) {
+                                        // print("before :${listIndex}");
+                                        // int? hjhj;
+                                        // hjhj++;
+                                        listIndex++;
+                                        //  print("after :${listIndex}");
+                                      }
                                     }
-                                    print("before :${listIndex}");
+
                                     return listGroupData[index].isPrivate == false
                                         ? GroupCartChatUser(
                                             user: listGroupData[index],
                                           )
                                         : CartChatUser(
-                                            user: isSearch ? searchList[index] : list[listIndex],
+                                            user: isSearch ? searchList[index] : list[listIndex - 1],
                                           );
                                   });
                           }

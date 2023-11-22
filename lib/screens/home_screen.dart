@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ConnectivityResult? _connectivityResult;
   Timer? _timer;
 
+// intuu hussain
   //
   // void _startConnectivityCheck() async {
   //   // _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
